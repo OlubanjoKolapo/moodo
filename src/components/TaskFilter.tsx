@@ -18,7 +18,7 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-2">
-        <FilterIcon size={16} />
+        <FilterIcon size={16} className="text-primary" />
         <h3 className="text-sm font-medium">Filter by emotion:</h3>
       </div>
       <Tabs 
@@ -28,12 +28,16 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
           onFilterChange(value === 'all' ? null : value);
         }}
       >
-        <TabsList className="w-full overflow-x-auto flex flex-nowrap">
-          <TabsTrigger value="all" className="px-3">
+        <TabsList className="w-full overflow-x-auto flex-wrap sm:flex-nowrap bg-background border border-input rounded-lg p-1">
+          <TabsTrigger value="all" className="px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             All
           </TabsTrigger>
           {emotions.map((emotion) => (
-            <TabsTrigger key={emotion.id} value={emotion.id} className="flex items-center gap-1 px-3">
+            <TabsTrigger 
+              key={emotion.id} 
+              value={emotion.id} 
+              className="flex items-center gap-1 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               <span>{emotion.emoji}</span>
               <span className="hidden sm:inline">{emotion.name}</span>
             </TabsTrigger>

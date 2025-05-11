@@ -7,6 +7,7 @@ import TaskFilter from '@/components/TaskFilter';
 import DailySummary from '@/components/DailySummary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { List } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const {
@@ -23,13 +24,14 @@ const Index = () => {
     getFilteredTasks,
     downloadTaskReport
   } = useTasks();
-
+  
+  const isMobile = useIsMobile();
   const summary = getDailySummary();
   const filteredTasks = getFilteredTasks();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 py-8 px-4">
-      <div className="max-w-3xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 py-6 px-4 sm:py-8">
+      <div className="max-w-4xl mx-auto space-y-6">
         <header className="text-center">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent mb-2">
             Vibecheck Tasks
@@ -40,7 +42,7 @@ const Index = () => {
         </header>
 
         {/* Task Input Section */}
-        <Card>
+        <Card className="shadow-sm border-border/60">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Add New Task</CardTitle>
           </CardHeader>
@@ -54,9 +56,9 @@ const Index = () => {
           </CardContent>
         </Card>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Daily Summary Section */}
-          <div className="md:col-span-1 order-2 md:order-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Daily Summary Section - On mobile, it comes after tasks */}
+          <div className={`${isMobile ? 'order-2' : 'order-1'} lg:col-span-1`}>
             <DailySummary 
               summary={summary} 
               emotions={EMOTIONS} 
@@ -64,12 +66,12 @@ const Index = () => {
             />
           </div>
 
-          {/* Task List Section */}
-          <div className="md:col-span-2 order-1 md:order-2">
-            <Card>
+          {/* Task List Section - On mobile, it comes before summary */}
+          <div className={`${isMobile ? 'order-1' : 'order-2'} lg:col-span-2`}>
+            <Card className="shadow-sm border-border/60 h-full">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <List size={20} /> Today's Tasks
+                  <List size={20} className="text-primary" /> Today's Tasks
                 </CardTitle>
               </CardHeader>
               <CardContent>
