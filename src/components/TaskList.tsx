@@ -16,7 +16,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleCompletion, onDelete
       <div className="py-8 text-center bg-muted/30 rounded-lg border border-dashed border-muted">
         <ClipboardList className="mx-auto h-12 w-12 text-muted-foreground opacity-50 mb-2" />
         <p className="text-muted-foreground">No tasks found with the current filter.</p>
-        <p className="text-muted-foreground text-sm">Try changing the filter or add a new task!</p>
+        <p className="text-muted-foreground text-sm">Try selecting a different emotion filter or add a new task!</p>
       </div>
     );
   }

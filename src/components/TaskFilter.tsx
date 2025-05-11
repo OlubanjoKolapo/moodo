@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Emotion } from '@/types';
-import { FilterIcon } from 'lucide-react';
+import { FilterIcon, CheckSquare } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TaskFilterProps {
   emotions: Emotion[];
@@ -17,33 +18,62 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
 }) => {
   return (
     <div className="mb-4">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-3">
         <FilterIcon size={16} className="text-primary" />
         <h3 className="text-sm font-medium">Filter by emotion:</h3>
       </div>
-      <Tabs 
-        defaultValue="all" 
-        value={selectedFilter || 'all'} 
-        onValueChange={(value) => {
-          onFilterChange(value === 'all' ? null : value);
-        }}
-      >
-        <TabsList className="w-full overflow-x-auto flex-wrap sm:flex-nowrap bg-background border border-input rounded-lg p-1">
-          <TabsTrigger value="all" className="px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+      
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+        <div 
+          className={cn(
+            "flex items-center gap-2 rounded-md border p-2 cursor-pointer transition-all",
+            selectedFilter === null ? "bg-primary/10 border-primary/30" : "bg-background hover:bg-muted/50"
+          )}
+          onClick={() => onFilterChange(null)}
+        >
+          <CheckSquare 
+            size={18} 
+            className={cn(
+              "transition-opacity",
+              selectedFilter === null ? "text-primary opacity-100" : "opacity-40"
+            )}
+          />
+          <span className={cn(
+            "text-sm font-medium",
+            selectedFilter === null ? "text-primary" : "text-muted-foreground"
+          )}>
             All
-          </TabsTrigger>
-          {emotions.map((emotion) => (
-            <TabsTrigger 
-              key={emotion.id} 
-              value={emotion.id} 
-              className="flex items-center gap-1 px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              <span>{emotion.emoji}</span>
-              <span className="hidden sm:inline">{emotion.name}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+          </span>
+        </div>
+        
+        {emotions.map((emotion) => (
+          <div
+            key={emotion.id}
+            className={cn(
+              "flex items-center gap-2 rounded-md border p-2 cursor-pointer transition-all",
+              selectedFilter === emotion.id ? "bg-primary/10 border-primary/30" : "bg-background hover:bg-muted/50"
+            )}
+            onClick={() => onFilterChange(selectedFilter === emotion.id ? null : emotion.id)}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-base">{emotion.emoji}</span>
+              <CheckSquare 
+                size={18} 
+                className={cn(
+                  "transition-opacity",
+                  selectedFilter === emotion.id ? "text-primary opacity-100" : "opacity-40"
+                )}
+              />
+            </div>
+            <span className={cn(
+              "text-sm font-medium",
+              selectedFilter === emotion.id ? "text-primary" : "text-muted-foreground"
+            )}>
+              {emotion.name}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
