@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Mic, MicOff } from 'lucide-react';
 import EmotionDropdown from './EmotionDropdown';
 import { Emotion } from '@/types';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface TaskInputProps {
   addTask: (text: string) => void;
@@ -79,7 +79,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
         setInputValue(speechResult);
       };
 
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setIsListening(false);
         toast({

@@ -3,14 +3,16 @@ import React from 'react';
 import { DailySummary as DailySummaryType, Emotion } from '@/types';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartBar } from 'lucide-react';
+import { ChartBar, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface DailySummaryProps {
   summary: DailySummaryType;
   emotions: Emotion[];
+  onDownloadReport: () => { blob: Blob, fileName: string } | null;
 }
 
-const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions }) => {
+const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions, onDownloadReport }) => {
   const { totalTasks, completedTasks, emotionCounts } = summary;
   const completionPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   
@@ -25,6 +27,21 @@ const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions }) => {
     }
   });
 
+  const handleDownload = () => {
+    const report = onDownloadReport();
+    if (report) {
+      const { blob, fileName } = report;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -32,6 +49,15 @@ const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions }) => {
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <ChartBar size={20} /> Today's Summary
           </CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleDownload}
+            className="flex items-center gap-1"
+          >
+            <Download size={14} />
+            <span className="hidden sm:inline">Download Report</span>
+          </Button>
         </div>
       </CardHeader>
       <CardContent>

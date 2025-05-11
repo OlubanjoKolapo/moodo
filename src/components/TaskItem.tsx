@@ -1,11 +1,27 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import confetti from 'canvas-confetti';
+
+// List of motivational quotes
+const MOTIVATIONAL_QUOTES = [
+  "Great job on completing that task!",
+  "One step closer to your goals!",
+  "Keep up the great work!",
+  "You're making excellent progress!",
+  "Success is built one task at a time!",
+  "You're crushing it today!",
+  "That's the way to get things done!",
+  "Productivity win!",
+  "Task complete, what's next on your journey?",
+  "You're unstoppable today!"
+];
 
 interface TaskItemProps {
   task: Task;
@@ -15,6 +31,54 @@ interface TaskItemProps {
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete }) => {
   const formattedDate = format(new Date(task.createdAt), 'MMM d, h:mm a');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { toast } = useToast();
+  
+  const handleCompletionToggle = () => {
+    onToggleCompletion(task.id);
+    
+    if (!task.completed) {
+      // Task is being completed
+      setShowConfetti(true);
+      
+      // Trigger confetti effect
+      const end = Date.now() + 500;
+      const colors = ['#9b87f5', '#7E69AB', '#D6BCFA'];
+      
+      const frame = () => {
+        confetti({
+          particleCount: 25,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0.1, y: 0.6 },
+          colors,
+          disableForReducedMotion: true
+        });
+        
+        confetti({
+          particleCount: 25,
+          angle: 120,
+          spread: 55,
+          origin: { x: 0.9, y: 0.6 },
+          colors,
+          disableForReducedMotion: true
+        });
+        
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      
+      frame();
+      
+      // Show motivational quote
+      const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)];
+      toast({
+        title: "Task Completed",
+        description: randomQuote
+      });
+    }
+  };
   
   return (
     <div className={cn(
@@ -25,7 +89,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete 
       <div className="flex items-center gap-3">
         <Checkbox 
           checked={task.completed} 
-          onCheckedChange={() => onToggleCompletion(task.id)}
+          onCheckedChange={handleCompletionToggle}
           className="h-5 w-5"
         />
         

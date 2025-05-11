@@ -3,6 +3,7 @@ import React from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import TaskInput from '@/components/TaskInput';
 import TaskList from '@/components/TaskList';
+import TaskFilter from '@/components/TaskFilter';
 import DailySummary from '@/components/DailySummary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { List } from 'lucide-react';
@@ -12,14 +13,19 @@ const Index = () => {
     tasks,
     selectedEmotion,
     setSelectedEmotion,
+    filterEmotion,
+    setFilterEmotion,
     EMOTIONS,
     addTask,
     toggleTaskCompletion,
     deleteTask,
-    getDailySummary
+    getDailySummary,
+    getFilteredTasks,
+    downloadTaskReport
   } = useTasks();
 
   const summary = getDailySummary();
+  const filteredTasks = getFilteredTasks();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 py-8 px-4">
@@ -51,7 +57,11 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Daily Summary Section */}
           <div className="md:col-span-1 order-2 md:order-1">
-            <DailySummary summary={summary} emotions={EMOTIONS} />
+            <DailySummary 
+              summary={summary} 
+              emotions={EMOTIONS} 
+              onDownloadReport={downloadTaskReport}
+            />
           </div>
 
           {/* Task List Section */}
@@ -63,8 +73,13 @@ const Index = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
+                <TaskFilter 
+                  emotions={EMOTIONS}
+                  selectedFilter={filterEmotion}
+                  onFilterChange={setFilterEmotion}
+                />
                 <TaskList
-                  tasks={tasks}
+                  tasks={filteredTasks}
                   onToggleCompletion={toggleTaskCompletion}
                   onDelete={deleteTask}
                 />
