@@ -55,22 +55,24 @@ const TaskFilter: React.FC<TaskFilterProps> = ({
             )}
             onClick={() => onFilterChange(selectedFilter === emotion.id ? null : emotion.id)}
           >
-            <div className="flex items-center gap-2">
-              <span className="text-base">{emotion.emoji}</span>
-              <CheckSquare 
-                size={18} 
-                className={cn(
-                  "transition-opacity",
-                  selectedFilter === emotion.id ? "text-primary opacity-100" : "opacity-40"
-                )}
-              />
+            <div className="flex h-full items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <span className="text-base">{emotion.emoji}</span>
+                <CheckSquare 
+                  size={18} 
+                  className={cn(
+                    "transition-opacity",
+                    selectedFilter === emotion.id ? "text-primary opacity-100" : "opacity-40"
+                  )}
+                />
+              </div>
+              <span className={cn(
+                "text-sm font-medium truncate",
+                selectedFilter === emotion.id ? "text-primary" : "text-muted-foreground"
+              )}>
+                {emotion.name}
+              </span>
             </div>
-            <span className={cn(
-              "text-sm font-medium",
-              selectedFilter === emotion.id ? "text-primary" : "text-muted-foreground"
-            )}>
-              {emotion.name}
-            </span>
           </div>
         ))}
       </div>

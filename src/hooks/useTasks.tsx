@@ -7,7 +7,7 @@ export const EMOTIONS: Emotion[] = [
   { id: 'neutral', emoji: '😐', name: 'Neutral' },
   { id: 'stressful', emoji: '😓', name: 'Stressful' },
   { id: 'overwhelming', emoji: '😩', name: 'Overwhelming' },
-  { id: 'anxious', emoji: '⏰', name: 'Anxious/Timely' },
+  { id: 'anxious', emoji: '⏰', name: 'Timely' },
 ];
 
 export function useTasks() {
