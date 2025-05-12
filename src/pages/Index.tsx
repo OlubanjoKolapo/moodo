@@ -20,6 +20,7 @@ const Index = () => {
     addTask,
     toggleTaskCompletion,
     deleteTask,
+    editTask,
     getDailySummary,
     getFilteredTasks,
     downloadTaskReport
@@ -84,11 +85,24 @@ const Index = () => {
                   tasks={filteredTasks}
                   onToggleCompletion={toggleTaskCompletion}
                   onDelete={deleteTask}
+                  onEdit={editTask}
                 />
               </CardContent>
             </Card>
           </div>
         </div>
+        
+        {/* Trademark Footer */}
+        <footer className="text-center pt-8 pb-4">
+          <a 
+            href="https://x.com/Kolapo_Olubanjo" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            Built by Olubanjo Kolapo
+          </a>
+        </footer>
       </div>
     </div>
   );

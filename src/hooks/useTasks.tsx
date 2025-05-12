@@ -77,6 +77,21 @@ export function useTasks() {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
   };
 
+  // Edit a task
+  const editTask = (id: string, newText: string) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => {
+        if (task.id === id) {
+          return {
+            ...task,
+            text: newText
+          };
+        }
+        return task;
+      })
+    );
+  };
+
   // Get daily summary
   const getDailySummary = (): DailySummary => {
     const todayTasks = tasks.filter(task => {
@@ -167,6 +182,7 @@ export function useTasks() {
     addTask,
     toggleTaskCompletion,
     deleteTask,
+    editTask,
     getDailySummary,
     getFilteredTasks,
     downloadTaskReport,

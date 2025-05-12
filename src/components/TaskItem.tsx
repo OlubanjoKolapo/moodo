@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Calendar } from 'lucide-react';
+import { Calendar, Edit, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
+import { Input } from '@/components/ui/input';
 
 // List of motivational quotes
 const MOTIVATIONAL_QUOTES = [
@@ -27,11 +28,14 @@ interface TaskItemProps {
   task: Task;
   onToggleCompletion: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string, newText: string) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete, onEdit }) => {
   const formattedDate = format(new Date(task.createdAt), 'MMM d, h:mm a');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(task.text);
   const { toast } = useToast();
   
   const handleCompletionToggle = () => {
@@ -79,6 +83,33 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete 
       });
     }
   };
+
+  const startEditing = () => {
+    if (!task.completed) {
+      setIsEditing(true);
+      setEditText(task.text);
+    }
+  };
+
+  const saveEdit = () => {
+    if (editText.trim() !== '') {
+      onEdit(task.id, editText.trim());
+      setIsEditing(false);
+      toast({
+        title: "Task Updated",
+        description: "Your task has been updated successfully"
+      });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditText(task.text);
+    }
+  };
   
   return (
     <div className={cn(
@@ -94,12 +125,22 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete 
         />
         
         <div className="flex-grow">
-          <p className={cn(
-            "text-lg font-medium",
-            task.completed && "line-through text-muted-foreground"
-          )}>
-            {task.text}
-          </p>
+          {isEditing ? (
+            <Input
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              className="text-lg"
+            />
+          ) : (
+            <p className={cn(
+              "text-lg font-medium",
+              task.completed && "line-through text-muted-foreground"
+            )}>
+              {task.text}
+            </p>
+          )}
           
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <Calendar size={12} />
@@ -114,6 +155,27 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete 
             </span>
             <span className="text-sm font-medium">{task.emotion.name}</span>
           </div>
+        )}
+
+        {isEditing ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={saveEdit}
+            className="text-primary"
+          >
+            <Check size={18} />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={startEditing}
+            className="text-muted-foreground hover:text-primary"
+            disabled={task.completed}
+          >
+            <Edit size={18} />
+          </Button>
         )}
         
         <Button 

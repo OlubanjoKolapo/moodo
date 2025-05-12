@@ -8,9 +8,10 @@ interface TaskListProps {
   tasks: Task[];
   onToggleCompletion: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string, newText: string) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleCompletion, onDelete }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleCompletion, onDelete, onEdit }) => {
   if (tasks.length === 0) {
     return (
       <div className="py-8 text-center bg-muted/30 rounded-lg border border-dashed border-muted">
@@ -29,6 +30,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleCompletion, onDelete
           task={task}
           onToggleCompletion={onToggleCompletion}
           onDelete={onDelete}
+          onEdit={onEdit}
         />
       ))}
     </div>
