@@ -31,6 +31,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
     // Check if Web Speech API is supported
     const hasSpeechRecognition = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
     setSpeechSupported(hasSpeechRecognition);
+    
+    // Start listening automatically if speech is supported
+    if (hasSpeechRecognition) {
+      startTriggerListener();
+    }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,10 +84,10 @@ const TaskInput: React.FC<TaskInputProps> = ({
       recognition.onstart = () => {
         setIsListening(true);
         setIsWaitingForTrigger(true);
-        setListeningStatus('Listening for "Hi Moodo"...');
+        setListeningStatus('Listening for "Hi"...');
         toast({
           title: "Listening for trigger",
-          description: "Say \"Hi Moodo\" to activate task recording."
+          description: 'Say "Hi" to activate task recording.'
         });
       };
 
@@ -90,8 +95,8 @@ const TaskInput: React.FC<TaskInputProps> = ({
         const speechResult = event.results[0][0].transcript.toLowerCase();
         console.log("Heard: ", speechResult);
         
-        if (speechResult.includes("hi moodo") || speechResult.includes("high moodo") || 
-            speechResult.includes("hey moodo") || speechResult.includes("hello moodo")) {
+        if (speechResult.includes("hi") || speechResult.includes("high") || 
+            speechResult.includes("hey") || speechResult.includes("hello")) {
           toast({
             title: "Trigger detected!",
             description: "I'm listening for your task now..."
@@ -110,7 +115,7 @@ const TaskInput: React.FC<TaskInputProps> = ({
           recognition.stop();
           toast({
             title: "Didn't catch that",
-            description: "Say \"Hi Moodo\" to activate task recording.",
+            description: 'Say "Hi" to activate task recording.',
             variant: "default"
           });
           
@@ -129,14 +134,17 @@ const TaskInput: React.FC<TaskInputProps> = ({
           description: `Speech recognition error: ${event.error}`,
           variant: "destructive"
         });
+        
+        // Try to restart listening after an error
+        setTimeout(startTriggerListener, 3000);
       };
 
       recognition.onend = () => {
         // Only update states if not transitioning to task listener
         if (isWaitingForTrigger && listeningStatus !== "I'm listening...") {
-          setIsListening(false);
-          setIsWaitingForTrigger(false);
-          setListeningStatus('');
+          // Don't reset listening status here since we want to restart automatically
+          // Instead, restart listening after a short delay
+          setTimeout(startTriggerListener, 500);
         }
       };
 
@@ -181,6 +189,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
           setIsListening(false);
           setIsWaitingForTrigger(false);
           setListeningStatus('');
+          
+          // Start listening for trigger again after adding the task
+          setTimeout(startTriggerListener, 1000);
         }, 500);
       };
 
@@ -194,6 +205,9 @@ const TaskInput: React.FC<TaskInputProps> = ({
           description: `Speech recognition error: ${event.error}`,
           variant: "destructive"
         });
+        
+        // Restart trigger listener after an error
+        setTimeout(startTriggerListener, 3000);
       };
 
       recognition.onend = () => {
@@ -237,37 +251,41 @@ const TaskInput: React.FC<TaskInputProps> = ({
         </div>
       </div>
       
-      {/* Voice Trigger Button */}
-      <div className="flex items-center justify-center mt-2">
-        {speechSupported && (
-          <div className="flex flex-col items-center">
-            <Button
-              type="button"
-              variant={isListening ? "destructive" : "secondary"}
-              className="gap-2 transition-all"
-              onClick={toggleListening}
-            >
-              {isListening ? (
-                <>
-                  <VolumeX size={18} className="animate-pulse" />
-                  Stop Listening
-                </>
-              ) : (
-                <>
-                  <Volume2 size={18} />
-                  Start Listening
-                </>
-              )}
-            </Button>
-            
+      {/* Voice Status Indicator */}
+      {speechSupported && (
+        <div className="flex flex-col items-center mt-2">
+          <div className="flex items-center gap-2">
+            {isListening && (
+              <Volume2 size={18} className="text-primary animate-pulse" />
+            )}
             {listeningStatus && (
-              <div className="mt-2 text-sm text-purple-600 font-medium animate-pulse">
+              <div className="text-sm text-purple-600 font-medium animate-pulse">
                 {listeningStatus}
               </div>
             )}
           </div>
-        )}
-      </div>
+          
+          {/* Manual toggle button - still useful as a fallback */}
+          <Button
+            type="button"
+            variant={isListening ? "destructive" : "secondary"}
+            className="gap-2 transition-all mt-2"
+            onClick={toggleListening}
+          >
+            {isListening ? (
+              <>
+                <VolumeX size={18} className="animate-pulse" />
+                Stop Listening
+              </>
+            ) : (
+              <>
+                <Volume2 size={18} />
+                Start Listening
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </form>
   );
 };
