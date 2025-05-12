@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { Mic, MicOff, Volume2 } from 'lucide-react';
 import EmotionDropdown from './EmotionDropdown';
 import { Emotion } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +22,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isListening, setIsListening] = useState(false);
-  const [isWaitingForTrigger, setIsWaitingForTrigger] = useState(false);
   const [listeningStatus, setListeningStatus] = useState('');
   const [speechSupported, setSpeechSupported] = useState(false);
   const { toast } = useToast();
@@ -31,11 +30,6 @@ const TaskInput: React.FC<TaskInputProps> = ({
     // Check if Web Speech API is supported
     const hasSpeechRecognition = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
     setSpeechSupported(hasSpeechRecognition);
-    
-    // Start listening automatically if speech is supported
-    if (hasSpeechRecognition) {
-      startTriggerListener();
-    }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,94 +56,11 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
     if (isListening) {
       setIsListening(false);
-      setIsWaitingForTrigger(false);
       setListeningStatus('');
       return;
     }
 
-    // Start listening for trigger phrase
-    startTriggerListener();
-  };
-
-  const startTriggerListener = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.continuous = false;
-      
-      recognition.onstart = () => {
-        setIsListening(true);
-        setIsWaitingForTrigger(true);
-        setListeningStatus('Listening for "Hi"...');
-        toast({
-          title: "Listening for trigger",
-          description: 'Say "Hi" to activate task recording.'
-        });
-      };
-
-      recognition.onresult = (event) => {
-        const speechResult = event.results[0][0].transcript.toLowerCase();
-        console.log("Heard: ", speechResult);
-        
-        if (speechResult.includes("hi") || speechResult.includes("high") || 
-            speechResult.includes("hey") || speechResult.includes("hello")) {
-          toast({
-            title: "Trigger detected!",
-            description: "I'm listening for your task now..."
-          });
-          
-          setListeningStatus("I'm listening...");
-          // Stop this recognition session and start task listener
-          recognition.stop();
-          
-          // Slight delay to ensure recognition has stopped before starting again
-          setTimeout(() => {
-            startTaskListener();
-          }, 500);
-        } else {
-          // If trigger not detected, restart listening
-          recognition.stop();
-          toast({
-            title: "Didn't catch that",
-            description: 'Say "Hi" to activate task recording.',
-            variant: "default"
-          });
-          
-          // Restart listening for trigger after a short delay
-          setTimeout(startTriggerListener, 500);
-        }
-      };
-
-      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error', event.error);
-        setIsListening(false);
-        setIsWaitingForTrigger(false);
-        setListeningStatus('');
-        toast({
-          title: "Error",
-          description: `Speech recognition error: ${event.error}`,
-          variant: "destructive"
-        });
-        
-        // Try to restart listening after an error
-        setTimeout(startTriggerListener, 3000);
-      };
-
-      recognition.onend = () => {
-        // Only update states if not transitioning to task listener
-        if (isWaitingForTrigger && listeningStatus !== "I'm listening...") {
-          // Don't reset listening status here since we want to restart automatically
-          // Instead, restart listening after a short delay
-          setTimeout(startTriggerListener, 500);
-        }
-      };
-
-      recognition.start();
-    }
+    startTaskListener();
   };
 
   const startTaskListener = () => {
@@ -162,9 +73,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
       recognition.maxAlternatives = 1;
       
       recognition.onstart = () => {
-        setIsWaitingForTrigger(false);
         setIsListening(true);
         setListeningStatus("I'm listening...");
+        toast({
+          title: "Listening for task",
+          description: "Speak your task now..."
+        });
       };
 
       recognition.onresult = (event) => {
@@ -187,27 +101,19 @@ const TaskInput: React.FC<TaskInputProps> = ({
           }
           // Reset states
           setIsListening(false);
-          setIsWaitingForTrigger(false);
           setListeningStatus('');
-          
-          // Start listening for trigger again after adding the task
-          setTimeout(startTriggerListener, 1000);
         }, 500);
       };
 
       recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Task recognition error', event.error);
         setIsListening(false);
-        setIsWaitingForTrigger(false);
         setListeningStatus('');
         toast({
           title: "Error",
           description: `Speech recognition error: ${event.error}`,
           variant: "destructive"
         });
-        
-        // Restart trigger listener after an error
-        setTimeout(startTriggerListener, 3000);
       };
 
       recognition.onend = () => {
@@ -252,38 +158,12 @@ const TaskInput: React.FC<TaskInputProps> = ({
       </div>
       
       {/* Voice Status Indicator */}
-      {speechSupported && (
-        <div className="flex flex-col items-center mt-2">
-          <div className="flex items-center gap-2">
-            {isListening && (
-              <Volume2 size={18} className="text-primary animate-pulse" />
-            )}
-            {listeningStatus && (
-              <div className="text-sm text-purple-600 font-medium animate-pulse">
-                {listeningStatus}
-              </div>
-            )}
+      {speechSupported && isListening && (
+        <div className="flex items-center justify-center mt-2 gap-2">
+          <Volume2 size={18} className="text-primary animate-pulse" />
+          <div className="text-sm text-purple-600 font-medium animate-pulse">
+            {listeningStatus}
           </div>
-          
-          {/* Manual toggle button - still useful as a fallback */}
-          <Button
-            type="button"
-            variant={isListening ? "destructive" : "secondary"}
-            className="gap-2 transition-all mt-2"
-            onClick={toggleListening}
-          >
-            {isListening ? (
-              <>
-                <VolumeX size={18} className="animate-pulse" />
-                Stop Listening
-              </>
-            ) : (
-              <>
-                <Volume2 size={18} />
-                Start Listening
-              </>
-            )}
-          </Button>
         </div>
       )}
     </form>
