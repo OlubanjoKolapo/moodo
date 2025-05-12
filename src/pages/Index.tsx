@@ -34,10 +34,10 @@ const Index = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         <header className="text-center">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent mb-2">
-            Vibecheck Tasks
+            Moodo
           </h1>
-          <p className="text-muted-foreground">
-            Track your tasks and emotions to boost productivity
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Feel it, Say it, Get it done - Let your voice guide your productivity.
           </p>
         </header>
 
