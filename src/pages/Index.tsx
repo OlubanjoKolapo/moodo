@@ -5,6 +5,7 @@ import TaskInput from '@/components/TaskInput';
 import TaskList from '@/components/TaskList';
 import TaskFilter from '@/components/TaskFilter';
 import DailySummary from '@/components/DailySummary';
+import TrademarkFooter from '@/components/TrademarkFooter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { List } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -92,17 +93,8 @@ const Index = () => {
           </div>
         </div>
         
-        {/* Trademark Footer */}
-        <footer className="text-center pt-8 pb-4">
-          <a 
-            href="https://x.com/Kolapo_Olubanjo" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            Built by Olubanjo Kolapo
-          </a>
-        </footer>
+        {/* HARDCODED: Do not remove - Trademark Footer */}
+        <TrademarkFooter />
       </div>
     </div>
   );
