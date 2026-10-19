@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Task } from '@/types';
 import TaskItem from './TaskItem';
-import { ClipboardList } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 
 interface TaskListProps {
   tasks: Task[];
@@ -14,26 +13,22 @@ interface TaskListProps {
 const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleCompletion, onDelete, onEdit }) => {
   if (tasks.length === 0) {
     return (
-      <div className="py-8 text-center bg-muted/30 rounded-lg border border-dashed border-muted">
-        <ClipboardList className="mx-auto h-12 w-12 text-muted-foreground opacity-50 mb-2" />
-        <p className="text-muted-foreground">No tasks found with the current filter.</p>
-        <p className="text-muted-foreground text-sm">Try selecting a different emotion filter or add a new task!</p>
+      <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-muted/40 px-6 py-14 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-primary">
+          <Inbox size={26} strokeWidth={1.5} />
+        </div>
+        <p className="font-display text-2xl">Nothing here yet</p>
+        <p className="mt-1 max-w-xs text-sm text-muted-foreground">Add a task above, or pick another filter to see more.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 animate-fade-in">
+    <ul className="space-y-2.5 animate-fade-in">
       {tasks.map(task => (
-        <TaskItem
-          key={task.id}
-          task={task}
-          onToggleCompletion={onToggleCompletion}
-          onDelete={onDelete}
-          onEdit={onEdit}
-        />
+        <TaskItem key={task.id} task={task} onToggleCompletion={onToggleCompletion} onDelete={onDelete} onEdit={onEdit} />
       ))}
-    </div>
+    </ul>
   );
 };
 

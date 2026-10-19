@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -5,66 +6,54 @@
 
 @layer base {
   :root {
-    --background: 250 20% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 30 25% 98%;
+    --foreground: 345 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 345 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 345 30% 12%;
 
-    --primary: 260 60% 55%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 345 62% 30%;
+    --primary-foreground: 30 40% 98%;
+    --primary-glow: 345 55% 42%;
 
-    --secondary: 250 20% 95%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 345 25% 96%;
+    --secondary-foreground: 345 45% 22%;
 
-    --muted: 250 10% 92%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 30 15% 95%;
+    --muted-foreground: 345 8% 45%;
 
-    --accent: 260 30% 90%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 345 35% 95%;
+    --accent-foreground: 345 55% 28%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 48%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 260 60% 55%;
+    --border: 345 15% 90%;
+    --input: 345 15% 88%;
+    --ring: 345 62% 30%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
+
+    --shadow-soft: 0 1px 2px hsl(345 40% 20% / 0.04), 0 8px 24px -12px hsl(345 40% 20% / 0.12);
+    --shadow-elegant: 0 20px 50px -20px hsl(345 62% 30% / 0.35);
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Manrope', system-ui, sans-serif;
   }
+  .font-display { font-family: 'Instrument Serif', Georgia, serif; letter-spacing: -0.01em; }
+}
 
-  .task-enter {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  .task-enter-active {
-    opacity: 1;
-    transform: translateY(0px);
-    transition: opacity 300ms, transform 300ms;
-  }
-
-  .task-exit {
-    opacity: 1;
-  }
-
-  .task-exit-active {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 300ms, transform 300ms;
+@layer components {
+  .surface {
+    @apply rounded-2xl border border-border/70 bg-card;
+    box-shadow: var(--shadow-soft);
   }
 }

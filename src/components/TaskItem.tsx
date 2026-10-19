@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Task } from '@/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Calendar, Edit, Check } from 'lucide-react';
+import { Clock, Pencil, Check, Trash2 } from 'lucide-react';
+import { EmotionBadge } from './EmotionIcon';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -47,7 +48,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete,
       
       // Trigger confetti effect
       const end = Date.now() + 500;
-      const colors = ['#9b87f5', '#7E69AB', '#D6BCFA'];
+      const colors = ['#7a1f3d', '#a8385c', '#f3d9e1', '#ffffff'];
       
       const frame = () => {
         confetti({
@@ -112,82 +113,38 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete,
   };
   
   return (
-    <div className={cn(
-      "border p-4 rounded-lg bg-white shadow-sm",
-      "transition-all duration-200 ease-in-out",
-      task.completed && "bg-muted/50"
+    <li className={cn(
+      "group flex items-start gap-3 rounded-xl border border-border/70 bg-card p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-[var(--shadow-soft)]",
+      task.completed && "bg-muted/40"
     )}>
-      <div className="flex items-center gap-3">
-        <Checkbox 
-          checked={task.completed} 
-          onCheckedChange={handleCompletionToggle}
-          className="h-5 w-5"
-        />
-        
-        <div className="flex-grow">
-          {isEditing ? (
-            <Input
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-              className="text-lg"
-            />
-          ) : (
-            <p className={cn(
-              "text-lg font-medium",
-              task.completed && "line-through text-muted-foreground"
-            )}>
-              {task.text}
-            </p>
-          )}
-          
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-            <Calendar size={12} />
-            <span>{formattedDate}</span>
-          </div>
-        </div>
-        
-        {task.emotion && (
-          <div className="flex items-center gap-1 bg-accent rounded-full px-3 py-1">
-            <span className="text-lg" role="img" aria-label={task.emotion.name}>
-              {task.emotion.emoji}
-            </span>
-            <span className="text-sm font-medium">{task.emotion.name}</span>
-          </div>
-        )}
-
+      <Checkbox
+        checked={task.completed}
+        onCheckedChange={handleCompletionToggle}
+        className="mt-0.5 h-5 w-5 rounded-full"
+        aria-label="Mark complete"
+      />
+      <div className="min-w-0 flex-1">
         {isEditing ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={saveEdit}
-            className="text-primary"
-          >
-            <Check size={18} />
-          </Button>
+          <Input value={editText} onChange={(e) => setEditText(e.target.value)} onKeyDown={handleKeyDown} autoFocus className="h-9" />
         ) : (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={startEditing}
-            className="text-muted-foreground hover:text-primary"
-            disabled={task.completed}
-          >
-            <Edit size={18} />
-          </Button>
+          <p className={cn("break-words font-medium leading-snug", task.completed && "text-muted-foreground line-through")}>
+            {task.text}
+          </p>
         )}
-        
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => onDelete(task.id)}
-          className="text-muted-foreground hover:text-destructive"
-        >
-          Delete
-        </Button>
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          {task.emotion && <EmotionBadge id={task.emotion.id} name={task.emotion.name} />}
+          <span className="inline-flex items-center gap-1"><Clock size={12} />{formattedDate}</span>
+        </div>
       </div>
-    </div>
+      <div className="flex shrink-0 items-center gap-0.5 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100">
+        {isEditing ? (
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={saveEdit} aria-label="Save"><Check size={16} /></Button>
+        ) : (
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={startEditing} disabled={task.completed} aria-label="Edit"><Pencil size={15} /></Button>
+        )}
+        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => onDelete(task.id)} aria-label="Delete"><Trash2 size={15} /></Button>
+      </div>
+    </li>
   );
 };
 

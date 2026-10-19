@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { DailySummary as DailySummaryType, Emotion } from '@/types';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartBar, Download, FileText } from 'lucide-react';
+import { TrendingUp, Download } from 'lucide-react';
+import { EmotionIcon } from './EmotionIcon';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast";
 
@@ -53,82 +52,70 @@ const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions, onDownlo
     }
   };
 
+  const R = 42, C = 2 * Math.PI * R;
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <ChartBar size={20} className="text-primary" /> Today's Summary
-          </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleDownload}
-            className="flex items-center gap-1 transition-all hover:bg-primary hover:text-primary-foreground"
-          >
-            <Download size={14} />
-            <span className="hidden sm:inline">Download</span>
-          </Button>
+    <section className="surface h-full p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Today</p>
+          <h2 className="font-display text-3xl">Summary</h2>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-5">
-          {/* Task completion progress */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium">
-                Completion Progress
-              </span>
-              <span className="text-sm font-medium bg-secondary px-2 py-1 rounded-full">
-                {completedTasks} of {totalTasks} tasks ({completionPercentage.toFixed(0)}%)
-              </span>
-            </div>
-            <Progress value={completionPercentage} className="h-2.5" />
-          </div>
-          
-          {/* Emotion summary */}
-          <div>
-            <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <FileText size={16} className="text-primary" />
-              Emotion Breakdown:
-            </h4>
-            {Object.keys(emotionCounts).length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {Object.entries(emotionCounts).map(([emotionId, count]) => {
-                  const emotion = emotions.find(e => e.id === emotionId);
-                  if (!emotion) return null;
-                  
-                  return (
-                    <div 
-                      key={emotionId} 
-                      className="flex items-center gap-2 bg-accent/50 rounded-md px-3 py-1.5 border border-border hover:border-primary transition-colors"
-                    >
-                      <span className="text-lg">{emotion.emoji}</span>
-                      <span className="text-sm">{emotion.name}: <strong>{count}</strong></span>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                No emotions tracked yet
-              </div>
-            )}
-          </div>
+        <TrendingUp size={20} strokeWidth={1.5} className="text-primary" />
+      </div>
 
-          {/* Dominant emotion */}
+      <div className="flex items-center gap-5">
+        <div className="relative h-28 w-28 shrink-0">
+          <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+            <circle cx="50" cy="50" r={R} fill="none" strokeWidth="8" className="stroke-muted" />
+            <circle cx="50" cy="50" r={R} fill="none" strokeWidth="8" strokeLinecap="round" className="stroke-primary transition-all duration-700"
+              strokeDasharray={C} strokeDashoffset={C - (completionPercentage / 100) * C} />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="font-display text-3xl leading-none">{completionPercentage.toFixed(0)}%</span>
+          </div>
+        </div>
+        <div>
+          <p className="text-2xl font-semibold">{completedTasks}<span className="text-muted-foreground">/{totalTasks}</span></p>
+          <p className="text-sm text-muted-foreground">tasks completed</p>
           {dominantEmotion && (
-            <div className="bg-accent/30 p-3 rounded-md border border-border">
-              <h4 className="text-sm font-medium">Today's primary mood:</h4>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-2xl">{dominantEmotion.emoji}</span>
-                <span className="font-medium">{dominantEmotion.name}</span>
-              </div>
-            </div>
+            <p className="mt-3 inline-flex items-center gap-1.5 text-sm">
+              <span className="text-muted-foreground">Mostly</span>
+              <EmotionIcon id={(dominantEmotion as Emotion).id} size={15} className="text-primary" />
+              <strong className="font-semibold">{(dominantEmotion as Emotion).name}</strong>
+            </p>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <div className="mt-7">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Mood breakdown</h3>
+        {totalTasks > 0 ? (
+          <ul className="space-y-3">
+            {emotions.map((emotion) => {
+              const count = emotionCounts[emotion.id] || 0;
+              const pct = totalTasks ? (count / totalTasks) * 100 : 0;
+              return (
+                <li key={emotion.id} className="text-sm">
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-2"><EmotionIcon id={emotion.id} size={15} className="text-primary" />{emotion.name}</span>
+                    <span className="tabular-nums text-muted-foreground">{count}</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${pct}%` }} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="rounded-xl bg-muted/60 p-4 text-sm text-muted-foreground">Your mood trends will appear as you add tasks.</p>
+        )}
+      </div>
+
+      <Button onClick={handleDownload} variant="outline" className="mt-7 h-11 w-full gap-2 rounded-xl border-primary/25 text-primary hover:bg-primary hover:text-primary-foreground">
+        <Download size={16} /> Download today's report
+      </Button>
+    </section>
   );
 };
 

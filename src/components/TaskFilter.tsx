@@ -1,9 +1,8 @@
-
 import React from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Emotion } from '@/types';
-import { FilterIcon, CheckSquare } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EmotionIcon } from './EmotionIcon';
 
 interface TaskFilterProps {
   emotions: Emotion[];
@@ -11,73 +10,33 @@ interface TaskFilterProps {
   onFilterChange: (value: string | null) => void;
 }
 
-const TaskFilter: React.FC<TaskFilterProps> = ({ 
-  emotions, 
-  selectedFilter, 
-  onFilterChange 
-}) => {
-  return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2 mb-3">
-        <FilterIcon size={16} className="text-primary" />
-        <h3 className="text-sm font-medium">Filter by emotion:</h3>
-      </div>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-        <div 
-          className={cn(
-            "flex items-center gap-2 rounded-md border p-2 cursor-pointer transition-all",
-            selectedFilter === null ? "bg-primary/10 border-primary/30" : "bg-background hover:bg-muted/50"
-          )}
-          onClick={() => onFilterChange(null)}
-        >
-          <CheckSquare 
-            size={18} 
-            className={cn(
-              "transition-opacity",
-              selectedFilter === null ? "text-primary opacity-100" : "opacity-40"
-            )}
-          />
-          <span className={cn(
-            "text-sm font-medium",
-            selectedFilter === null ? "text-primary" : "text-muted-foreground"
-          )}>
-            All
-          </span>
-        </div>
-        
-        {emotions.map((emotion) => (
-          <div
-            key={emotion.id}
-            className={cn(
-              "flex items-center gap-2 rounded-md border p-2 cursor-pointer transition-all",
-              selectedFilter === emotion.id ? "bg-primary/10 border-primary/30" : "bg-background hover:bg-muted/50"
-            )}
-            onClick={() => onFilterChange(selectedFilter === emotion.id ? null : emotion.id)}
-          >
-            <div className="flex h-full items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <span className="text-base">{emotion.emoji}</span>
-                <CheckSquare 
-                  size={18} 
-                  className={cn(
-                    "transition-opacity",
-                    selectedFilter === emotion.id ? "text-primary opacity-100" : "opacity-40"
-                  )}
-                />
-              </div>
-              <span className={cn(
-                "text-sm font-medium truncate",
-                selectedFilter === emotion.id ? "text-primary" : "text-muted-foreground"
-              )}>
-                {emotion.name}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+const Chip = ({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    className={cn(
+      'inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all',
+      active
+        ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+        : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
+    )}
+  >
+    {children}
+  </button>
+);
+
+const TaskFilter: React.FC<TaskFilterProps> = ({ emotions, selectedFilter, onFilterChange }) => (
+  <div className="-mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+    <Chip active={selectedFilter === null} onClick={() => onFilterChange(null)}>
+      <LayoutGrid size={15} strokeWidth={1.75} /> All
+    </Chip>
+    {emotions.map((e) => (
+      <Chip key={e.id} active={selectedFilter === e.id} onClick={() => onFilterChange(selectedFilter === e.id ? null : e.id)}>
+        <EmotionIcon id={e.id} size={15} /> {e.name}
+      </Chip>
+    ))}
+  </div>
+);
 
 export default TaskFilter;
