@@ -54,7 +54,7 @@ const DailySummary: React.FC<DailySummaryProps> = ({ summary, emotions, onDownlo
 
   const R = 42, C = 2 * Math.PI * R;
   return (
-    <section className="surface h-full p-6">
+    <section className="surface h-full p-5 sm:p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Today</p>
