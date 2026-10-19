@@ -33,7 +33,7 @@ const Index = () => {
         </nav>
 
         <header className="mb-8 max-w-2xl sm:mb-10">
-          <h1 className="font-display text-5xl leading-[1.02] sm:text-7xl">
+          <h1 className="font-display text-[2.6rem] leading-[1.05] sm:text-7xl">
             Feel it, say it, <em className="text-primary">get it done.</em>
           </h1>
           <p className="mt-4 text-base text-muted-foreground sm:text-lg">
@@ -46,7 +46,7 @@ const Index = () => {
         </section>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <section className="surface p-5 sm:p-6 lg:col-span-2">
+          <section className="surface min-w-0 p-4 sm:p-6 lg:col-span-2">
             <div className="mb-5 flex items-end justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Your list</p>

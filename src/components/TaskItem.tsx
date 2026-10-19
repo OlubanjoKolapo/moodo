@@ -114,7 +114,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleCompletion, onDelete,
   
   return (
     <li className={cn(
-      "group flex items-start gap-3 rounded-xl border border-border/70 bg-card p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-[var(--shadow-soft)]",
+      "group flex items-start gap-3 rounded-xl border border-border/70 bg-card p-3.5 sm:p-4 transition-all duration-200 hover:border-primary/30 hover:shadow-[var(--shadow-soft)]",
       task.completed && "bg-muted/40"
     )}>
       <Checkbox
