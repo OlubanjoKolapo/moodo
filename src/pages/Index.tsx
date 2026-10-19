@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import TaskInput from '@/components/TaskInput';
@@ -6,93 +5,66 @@ import TaskList from '@/components/TaskList';
 import TaskFilter from '@/components/TaskFilter';
 import DailySummary from '@/components/DailySummary';
 import TrademarkFooter from '@/components/TrademarkFooter';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { List } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import Logo from '@/components/Logo';
+import { format } from 'date-fns';
 
 const Index = () => {
   const {
-    tasks,
-    selectedEmotion,
-    setSelectedEmotion,
-    filterEmotion,
-    setFilterEmotion,
-    EMOTIONS,
-    addTask,
-    toggleTaskCompletion,
-    deleteTask,
-    editTask,
-    getDailySummary,
-    getFilteredTasks,
-    downloadTaskReport
+    tasks, selectedEmotion, setSelectedEmotion, filterEmotion, setFilterEmotion, EMOTIONS,
+    addTask, toggleTaskCompletion, deleteTask, editTask, getDailySummary, getFilteredTasks, downloadTaskReport,
   } = useTasks();
-  
-  const isMobile = useIsMobile();
+
   const summary = getDailySummary();
   const filteredTasks = getFilteredTasks();
+  const open = tasks.filter(t => !t.completed).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-accent/20 py-6 px-4 sm:py-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <header className="text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent mb-2">
-            Moodo
+    <div className="min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.10),transparent_65%)]" />
+      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+        <nav className="mb-10 flex items-center justify-between sm:mb-14">
+          <div className="flex items-center gap-2.5">
+            <Logo size={34} />
+            <span className="text-lg font-bold tracking-tight">Moodo</span>
+          </div>
+          <span className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground">
+            {format(new Date(), 'EEEE, MMM d')}
+          </span>
+        </nav>
+
+        <header className="mb-8 max-w-2xl sm:mb-10">
+          <h1 className="font-display text-5xl leading-[1.02] sm:text-7xl">
+            Feel it, say it, <em className="text-primary">get it done.</em>
           </h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Feel it, Say it, Get it done - Let your voice guide your productivity.
+          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+            Let your voice guide your productivity.
           </p>
         </header>
 
-        {/* Task Input Section */}
-        <Card className="shadow-sm border-border/60">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Add New Task</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TaskInput
-              addTask={addTask}
-              emotions={EMOTIONS}
-              selectedEmotion={selectedEmotion}
-              setSelectedEmotion={setSelectedEmotion}
-            />
-          </CardContent>
-        </Card>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Daily Summary Section - On mobile, it comes after tasks */}
-          <div className={`${isMobile ? 'order-2' : 'order-1'} lg:col-span-1`}>
-            <DailySummary 
-              summary={summary} 
-              emotions={EMOTIONS} 
-              onDownloadReport={downloadTaskReport}
-            />
-          </div>
+        <section className="surface mb-6 p-4 sm:p-5">
+          <TaskInput addTask={addTask} emotions={EMOTIONS} selectedEmotion={selectedEmotion} setSelectedEmotion={setSelectedEmotion} />
+        </section>
 
-          {/* Task List Section - On mobile, it comes before summary */}
-          <div className={`${isMobile ? 'order-1' : 'order-2'} lg:col-span-2`}>
-            <Card className="shadow-sm border-border/60 h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <List size={20} className="text-primary" /> Today's Tasks
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <TaskFilter 
-                  emotions={EMOTIONS}
-                  selectedFilter={filterEmotion}
-                  onFilterChange={setFilterEmotion}
-                />
-                <TaskList
-                  tasks={filteredTasks}
-                  onToggleCompletion={toggleTaskCompletion}
-                  onDelete={deleteTask}
-                  onEdit={editTask}
-                />
-              </CardContent>
-            </Card>
-          </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <section className="surface p-5 sm:p-6 lg:col-span-2">
+            <div className="mb-5 flex items-end justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Your list</p>
+                <h2 className="font-display text-3xl">Today's tasks</h2>
+              </div>
+              <span className="text-sm text-muted-foreground">{open} open</span>
+            </div>
+            <TaskFilter emotions={EMOTIONS} selectedFilter={filterEmotion} onFilterChange={setFilterEmotion} />
+            <TaskList tasks={filteredTasks} onToggleCompletion={toggleTaskCompletion} onDelete={deleteTask} onEdit={editTask} />
+          </section>
+
+          <aside className="lg:col-span-1">
+            <div className="lg:sticky lg:top-6">
+              <DailySummary summary={summary} emotions={EMOTIONS} onDownloadReport={downloadTaskReport} />
+            </div>
+          </aside>
         </div>
-        
+
         {/* HARDCODED: Do not remove - Trademark Footer */}
         <TrademarkFooter />
       </div>

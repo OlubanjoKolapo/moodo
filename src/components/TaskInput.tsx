@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, MicOff, Volume2 } from 'lucide-react';
+import { Mic, MicOff, Volume2, Plus } from 'lucide-react';
 import EmotionDropdown from './EmotionDropdown';
 import { Emotion } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -126,44 +126,37 @@ const TaskInput: React.FC<TaskInputProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="flex flex-col md:flex-row gap-3 w-full">
+      <div className="flex w-full flex-col gap-3 md:flex-row">
         <div className="relative flex-grow">
           <Input
-            placeholder="Add a new task..."
+            placeholder="What needs doing?"
             value={inputValue}
             onChange={handleInputChange}
-            className="bg-white"
+            className="h-12 rounded-xl bg-card pr-14 text-base"
           />
           {speechSupported && (
-            <Button 
-              type="button" 
-              size="icon" 
-              variant={isListening ? "destructive" : "outline"}
+            <Button
+              type="button"
+              size="icon"
+              variant={isListening ? "default" : "ghost"}
               onClick={toggleListening}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              aria-label={isListening ? "Stop listening" : "Add task by voice"}
+              className={`absolute right-1.5 top-1/2 h-9 w-9 -translate-y-1/2 rounded-lg ${isListening ? 'animate-pulse' : 'text-primary hover:bg-accent'}`}
             >
-              {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+              {isListening ? <MicOff size={17} /> : <Mic size={17} />}
             </Button>
           )}
         </div>
-        
-        <div className="flex gap-2 w-full md:w-auto">
-          <EmotionDropdown 
-            emotions={emotions} 
-            selectedEmotion={selectedEmotion}
-            onSelectEmotion={setSelectedEmotion}
-          />
-          <Button type="submit" className="whitespace-nowrap">Add Task</Button>
+        <div className="flex w-full gap-2 md:w-auto">
+          <EmotionDropdown emotions={emotions} selectedEmotion={selectedEmotion} onSelectEmotion={setSelectedEmotion} />
+          <Button type="submit" className="h-12 gap-1.5 whitespace-nowrap rounded-xl px-5 shadow-[var(--shadow-elegant)]">
+            <Plus size={17} /> Add
+          </Button>
         </div>
       </div>
-      
-      {/* Voice Status Indicator */}
       {speechSupported && isListening && (
-        <div className="flex items-center justify-center mt-2 gap-2">
-          <Volume2 size={18} className="text-primary animate-pulse" />
-          <div className="text-sm text-purple-600 font-medium animate-pulse">
-            {listeningStatus}
-          </div>
+        <div className="flex items-center gap-2 text-sm font-medium text-primary">
+          <Volume2 size={16} className="animate-pulse" /> {listeningStatus}
         </div>
       )}
     </form>
