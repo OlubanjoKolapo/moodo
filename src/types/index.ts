@@ -31,9 +31,5 @@ declare global {
     webkitSpeechRecognition: typeof SpeechRecognition;
   }
 
-  // Add SpeechRecognitionErrorEvent interface
-  interface SpeechRecognitionErrorEvent extends Event {
-    error: string;
-    message?: string;
-  }
+
 }
